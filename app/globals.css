@@ -1,26 +1,56 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 헤더 전체 줄 하나 */
+.header {
+  position: sticky;          /* 필요없으면 static 으로 */
+  top: 0;
+  z-index: 50;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ccc;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* 헤더 안 가로 정렬 */
+.header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 로고 텍스트 */
+.logo a {
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  color: #222222;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* 메뉴 리스트: 가로로 한 줄 정렬 */
+.nav-list {
+  display: flex;             /* ***겹침 방지 핵심*** */
+  gap: 24px;                 /* 메뉴 간 간격 */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 각 메뉴 아이템 */
+.nav-item {
+  /* 절대좌표 금지! position: static 이 기본값 */
+}
+
+/* 링크 스타일 */
+.nav-link {
+  text-decoration: none;
+  letter-spacing: 0.18em;
+  font-size: 0.85rem;
+  color: #3b2a86;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 4px;
+}
+
+.nav-link:hover {
+  border-bottom-color: #3b2a86;
 }
