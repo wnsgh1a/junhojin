@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { MapPinAreaIcon } from "@phosphor-icons/react";
 
 type FormState = {
   inquiry: string;
@@ -94,9 +95,19 @@ export default function ContactPage() {
               <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
                 Address
               </h2>
-              <p className="text-sm leading-relaxed">
-                서울시 강남구 강남대로 308 랜드마크타워 7F
-              </p>
+              <div className="flex">
+                <p className="text-sm leading-relaxed">
+                  서울특별시 강남구 도곡로7길12, 2층
+                </p>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%8F%84%EA%B3%A1%EB%A1%9C7%EA%B8%B8%2012%2C%202%EC%B8%B5"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 inline-flex w-7 h-7 items-center justify-center text-[11px]"
+                >
+                  <MapPinAreaIcon size={18} weight="fill" />
+                </a>
+              </div>
             </div>
 
             <div>
