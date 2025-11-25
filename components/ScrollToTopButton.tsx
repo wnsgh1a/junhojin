@@ -1,4 +1,5 @@
 "use client";
+import { ArrowUpIcon } from "@phosphor-icons/react";
 
 export default function ScrollToTopButton() {
   const scrollToTop = () => {
@@ -31,7 +32,9 @@ export default function ScrollToTopButton() {
       "
       aria-label="맨 위로 이동"
     >
-      ↑
+      <a href="#" aria-label="arrow-up">
+        <ArrowUpIcon size={18} weight="fill" />
+      </a>
     </button>
   );
 }
