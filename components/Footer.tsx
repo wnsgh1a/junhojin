@@ -1,5 +1,13 @@
 // components/Footer.tsx
+"use client";
+
 import Link from "next/link";
+import {
+  FacebookLogo,
+  InstagramLogo,
+  BehanceLogo,
+  YoutubeLogo,
+} from "@phosphor-icons/react";
 
 export default function Footer() {
   return (
@@ -50,14 +58,25 @@ export default function Footer() {
 
           {/* ------------------ RIGHT : SNS 아이콘 ------------------ */}
           <div className="flex items-center justify-start md:justify-end gap-3">
-            <button className="w-7 h-7 border border-white/40 flex items-center justify-center text-[11px]">
-              f
+            <button className="w-7 h-7 flex items-center justify-center text-[11px]">
+              <a href="#" aria-label="Facebook">
+                <FacebookLogo size={18} weight="fill" />
+              </a>
             </button>
-            <button className="w-7 h-7 border border-white/40 flex items-center justify-center text-[11px]">
-              ig
+            <button className="w-7 h-7 flex items-center justify-center text-[11px]">
+              <a href="#" aria-label="Facebook">
+                <InstagramLogo size={18} weight="fill" />
+              </a>
             </button>
-            <button className="w-7 h-7 border border-white/40 flex items-center justify-center text-[11px]">
-              yt
+            <button className="w-7 h-7 flex items-center justify-center text-[11px]">
+              <a href="#" aria-label="Facebook">
+                <BehanceLogo size={18} weight="fill" />
+              </a>
+            </button>
+            <button className="w-7 h-7 flex items-center justify-center text-[11px]">
+              <a href="#" aria-label="Facebook">
+                <YoutubeLogo size={18} weight="fill" />
+              </a>
             </button>
           </div>
         </div>
