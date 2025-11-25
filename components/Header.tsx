@@ -31,11 +31,12 @@ export default function Header() {
                 key={item.path}
                 href={item.path}
                 className={`
-                  text-sm tracking-wide transition
+                  text-sm tracking-wide transition-all duration-200
+
                   ${
                     active
-                      ? "text-white bg-yellow-400 px-2 py-0.5 rounded-full font-semibold"
-                      : "text-white/80 hover:text-white"
+                      ? "text-black bg-yellow-400 px-3 py-1 rounded-full font-semibold"
+                      : "text-white/80 hover:text-white hover:-translate-y-[2px] hover:opacity-80"
                   }
                 `}
               >
