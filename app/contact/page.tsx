@@ -95,7 +95,7 @@ export default function ContactPage() {
               <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
                 Address
               </h2>
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="text-sm leading-relaxed">
                   서울특별시 강남구 도곡로7길12, 2층
                 </p>

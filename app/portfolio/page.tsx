@@ -20,7 +20,7 @@ const PORTFOLIOS: PortfolioItem[] = [
   {
     id: 1,
     slug: "haru-job-campaign",
-    thumbnail: "/thumb-work-1.jpg",
+    thumbnail: "/hero/hero-01.jpg",
     title: "하루종일 아주 쾌적하나 캠페인",
     author: "JOOCHOIST Creative",
     date: "2024.09",
@@ -29,7 +29,7 @@ const PORTFOLIOS: PortfolioItem[] = [
   {
     id: 2,
     slug: "brand-experience-popup",
-    thumbnail: "/thumb-work-2.jpg",
+    thumbnail: "/hero/hero-02.jpg",
     title: "브랜드 경험 팝업 스토어",
     author: "JOOCHOIST Studio",
     date: "2024.07",
@@ -38,7 +38,7 @@ const PORTFOLIOS: PortfolioItem[] = [
   {
     id: 3,
     slug: "sns-season-project",
-    thumbnail: "/thumb-work-3.jpg",
+    thumbnail: "/hero/hero-03.jpg",
     title: "F/W 시즌 SNS 시리즈",
     author: "Social Team",
     date: "2024.05",
@@ -47,7 +47,7 @@ const PORTFOLIOS: PortfolioItem[] = [
   {
     id: 4,
     slug: "ooh-integrated-campaign",
-    thumbnail: "/thumb-work-4.jpg",
+    thumbnail: "/hero/hero-04.jpg",
     title: "도심 옥외 통합 캠페인",
     author: "Campaign Unit",
     date: "2024.03",
