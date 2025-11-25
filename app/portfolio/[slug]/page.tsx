@@ -1,170 +1,116 @@
 // app/portfolio/[slug]/page.tsx
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import Link from "next/link";
 
-type Project = {
+type PortfolioItem = {
+  id: number;
   slug: string;
+  thumbnail: string; // DB에는 hero-01.jpg 같은 파일명
   title: string;
-  campaignTitle: string;
-  client: string;
+  author: string;
   date: string;
-  service: string;
-  credit: string;
-  background: string;
-  idea: string;
-  result: string;
-  heroImage: string; // 상단 큰 이미지
-  videoThumbnail: string; // 하단 썸네일(지금은 이미지, 나중에 영상으로 교체)
+  tags: string[] | null;
+  content?: string | null; // 상세 설명용 (있으면 사용)
 };
 
-// 임시 더미 데이터 (나중에 Supabase 연동 가능)
-const PROJECTS: Project[] = [
-  {
-    slug: "haru-job-campaign",
-    title: "빙고",
-    campaignTitle: "캠페인 타이틀 명 캠페인 타이틀 명",
-    client: "주최자들 X 어쩌구 브랜드",
-    date: "2024.09.01",
-    service: "Digital Campaign, Video, SNS",
-    credit: "주최자들 INC. ALL RIGHTS RESERVED",
-    background:
-      "Z세대가 자주 방문하는 커뮤니티와 영상 콘텐츠를 분석해 일상과 밀접하게 닿아있는 취향들을 찾았습니다. 이를 바탕으로, 하루의 특정 순간을 점유하는 대신 하루 전체의 감정을 설계하는 방향으로 캠페인을 기획했습니다.",
-    idea: "‘하루종일 아주 쾌적하나’라는 슬로건 아래, 바쁜 일상 속에서도 여유와 웃음을 선물하는 메시지를 다양한 채널에 맞춰 변주했습니다. 영상, 옥외, 디지털 배너, SNS 콘텐츠까지 하나의 내러티브로 연결해 브랜드 경험을 통합했습니다.",
-    result:
-      "캠페인 기간 동안 주요 영상 조회수 500만 회 이상, 브랜드 검색량 230% 증가를 기록했습니다. 무엇보다도 ‘요즘 딱 필요한 위로였다’는 실제 사용자 반응이 다수 수집되며 브랜디드 콘텐츠로서 긍정적인 평가를 받았습니다.",
-    heroImage: "/portfolio-detail-hero.jpg", // public 폴더에 넣고 이름 맞춰주면 됨
-    videoThumbnail: "/portfolio-detail-video.jpg",
-  },
-  // TODO: 다른 프로젝트들 추가
-];
+export default function PortfolioDetailPage() {
+  const { slug } = useParams();
+  const [item, setItem] = useState<PortfolioItem | null>(null);
+  const [loading, setLoading] = useState(true);
 
-type PageProps = {
-  params: { slug: string };
-};
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      const { data, error } = await supabase
+        .from("portfolios")
+        .select("*")
+        .eq("slug", slug)
+        .single();
 
-export default function PortfolioDetailPage({ params }: PageProps) {
-  const project = PROJECTS.find((p) => p.slug === params.slug);
+      if (error) {
+        console.error("Supabase error:", error.message);
+        setItem(null);
+      } else {
+        setItem(data as PortfolioItem);
+      }
 
-  if (!project) {
-    return notFound();
+      setLoading(false);
+    };
+
+    fetchPortfolio();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="mt-16 bg-white text-black">
+        <div className="max-w-5xl mx-auto px-6 py-20 text-gray-500">
+          Loading...
+        </div>
+      </div>
+    );
   }
 
+  if (!item) {
+    return (
+      <div className="mt-16 bg-white text-black">
+        <div className="max-w-5xl mx-auto px-6 py-20 text-red-500">
+          포트폴리오를 찾을 수 없습니다.
+        </div>
+      </div>
+    );
+  }
+
+  // 🔥 여기서 Storage public URL 생성
+  const { data: publicData } = supabase.storage
+    .from("portfolio_image") // 버킷 이름
+    .getPublicUrl(item.thumbnail);
+
+  const thumbnailUrl = publicData.publicUrl;
+
   return (
-    <>
-      {/* 1. 상단 히어로 영역 (큰 이미지/영상) */}
-      <section className="mt-16 bg-black">
-        <div className="relative w-full h-[50vh] md:h-[70vh]">
+    <div className="bg-white text-black mt-16">
+      <div className="max-w-5xl mx-auto px-6 py-10">
+        {/* 상단 네비게이션 */}
+        <div className="mb-6 text-sm text-gray-500 flex items-center gap-2">
+          <Link href="/portfolio" className="hover:underline">
+            Our Work
+          </Link>
+          <span>/</span>
+          <span className="text-gray-700">{item.title}</span>
+        </div>
+
+        {/* 제목 / 메타 정보 */}
+        <h1 className="text-3xl md:text-4xl font-bold">{item.title}</h1>
+
+        <div className="mt-3 text-sm text-gray-500 flex flex-wrap gap-4">
+          <span>{item.author}</span>
+          <span>{item.date}</span>
+          {item.tags && item.tags.length > 0 && (
+            <span className="truncate">{item.tags.join(" · ")}</span>
+          )}
+        </div>
+
+        {/* 썸네일 이미지 */}
+        <div className="mt-8 relative w-full aspect-video overflow-hidden rounded-xl bg-gray-100">
           <Image
-            src={project.heroImage}
-            alt={project.campaignTitle}
+            src={thumbnailUrl}
+            alt={item.title}
             fill
-            priority
             className="object-cover"
           />
         </div>
-      </section>
 
-      {/* 2. 상세 정보 영역 */}
-      <section className="max-w-6xl mx-auto px-6 py-12 text-sm leading-relaxed">
-        {/* 캡션 영역: 카테고리 + 캠페인 타이틀 */}
-        <div className="mb-10">
-          <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-2">
-            Bingo
-          </p>
-          <h1 className="text-xl md:text-2xl font-semibold">
-            {project.campaignTitle}
-          </h1>
-        </div>
-
-        {/* 2-1. 왼쪽 설명 / 오른쪽 메타 정보 */}
-        <div className="grid grid-cols-1 md:grid-cols-[2.2fr,1fr] gap-10 md:gap-16 mb-16">
-          {/* LEFT : BACKGROUND / IDEA / RESULT */}
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-xs font-semibold tracking-[0.15em] uppercase mb-2">
-                Background &amp; Insight
-              </h2>
-              <p className="text-[13px] text-gray-800 whitespace-pre-line">
-                {project.background}
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-xs font-semibold tracking-[0.15em] uppercase mb-2">
-                Idea
-              </h2>
-              <p className="text-[13px] text-gray-800 whitespace-pre-line">
-                {project.idea}
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-xs font-semibold tracking-[0.15em] uppercase mb-2">
-                Result
-              </h2>
-              <p className="text-[13px] text-gray-800 whitespace-pre-line">
-                {project.result}
-              </p>
-            </div>
+        {/* 본문 내용 (있을 때만) */}
+        {item.content && (
+          <div className="mt-10 text-gray-700 leading-relaxed whitespace-pre-line">
+            {item.content}
           </div>
-
-          {/* RIGHT : DATE / CLIENT / SERVICE / CREDIT */}
-          <div className="space-y-5 text-[12px] text-gray-800">
-            <div>
-              <h3 className="uppercase tracking-[0.15em] text-[11px] text-gray-500 mb-1">
-                Date of Year
-              </h3>
-              <p>{project.date}</p>
-            </div>
-
-            <div>
-              <h3 className="uppercase tracking-[0.15em] text-[11px] text-gray-500 mb-1">
-                Client
-              </h3>
-              <p>{project.client}</p>
-            </div>
-
-            <div>
-              <h3 className="uppercase tracking-[0.15em] text-[11px] text-gray-500 mb-1">
-                Service
-              </h3>
-              <p>{project.service}</p>
-            </div>
-
-            <div>
-              <h3 className="uppercase tracking-[0.15em] text-[11px] text-gray-500 mb-1">
-                Credit
-              </h3>
-              <p>{project.credit}</p>
-            </div>
-
-            {/* 예시: 빨간 텍스트 링크 한 줄 */}
-            <div className="pt-2">
-              <button className="text-[11px] text-red-500 underline">
-                공식 유튜브 영상 / 추가 자료보기
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 3. 하단 영상 / 이미지 영역 */}
-        <div className="mt-10">
-          <div className="relative w-full aspect-video bg-black">
-            <Image
-              src={project.videoThumbnail}
-              alt={`${project.campaignTitle} video`}
-              fill
-              className="object-cover"
-            />
-            {/* 플레이 버튼 오버레이 (MVP용) */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-white/80 flex items-center justify-center">
-                <div className="ml-1 w-5 h-5 border-l-[14px] border-l-black border-y-[10px] border-y-transparent" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
+        )}
+      </div>
+    </div>
   );
 }

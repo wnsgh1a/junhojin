@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 type PortfolioCardProps = {
-  thumbnail: string;
+  thumbnail: string; // 'hero-01.jpg'
   title: string;
   author: string;
   date: string;
@@ -19,6 +20,13 @@ export default function PortfolioCard({
   const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
 
+  // 🔥 Supabase Storage public URL 생성
+  const { data } = supabase.storage
+    .from("portfolio_image")
+    .getPublicUrl(thumbnail);
+
+  const thumbnailUrl = data.publicUrl;
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -26,18 +34,9 @@ export default function PortfolioCard({
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-
-        if (entry.isIntersecting) {
-          // 화면에 들어올 때 → 보이도록
-          setVisible(true);
-        } else {
-          // 화면에서 벗어나면 → 다시 안 보이는 상태로
-          setVisible(false);
-        }
+        setVisible(entry.isIntersecting);
       },
-      {
-        threshold: 0.1, // 카드가 10%만 보여도 발동
-      }
+      { threshold: 0.15 }
     );
 
     observer.observe(el);
@@ -47,19 +46,17 @@ export default function PortfolioCard({
   return (
     <article
       ref={ref}
-      className={`
-        group cursor-pointer rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm
-        transition-all duration-700 ease-out
-        ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
-      `}
+      className={`group cursor-pointer rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm transition-all duration-700 ease-out ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
     >
       {/* 썸네일 */}
       <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
         <Image
-          src={thumbnail}
+          src={thumbnailUrl}
           alt={title}
           fill
-          className="object-cover group-hover:scale-105 transition-transform"
+          className="object-cover group-hover:scale-105 transition-transform duration-700"
         />
       </div>
 
