@@ -14,7 +14,7 @@ export default function Footer() {
     <footer className="bg-black text-white">
       <div className="max-w-6xl mx-auto px-6 py-10">
         {/* 전체 3분할 레이아웃 */}
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-9">
           {/* ------------------ LEFT : 로고 + 카피라이트 ------------------ */}
           <div className="flex flex-col gap-2">
             <div className="text-lg font-semibold uppercase tracking-[0.25em]">

@@ -114,7 +114,7 @@ export default function ContactPage() {
               <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
                 Tel
               </h2>
-              <p className="text-sm font-semibold">+82-2-2016-2300</p>
+              <p className="text-sm font-semibold">02-556-5557</p>
             </div>
           </div>
 
