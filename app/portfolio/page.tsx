@@ -108,7 +108,7 @@ export default function PortfolioPage() {
               Our Work <span className="-ml-1">_</span>
             </h1>
             <p className="mt-3 text-sm md:text-base text-gray-300">
-              디지털 캠페인부터 SNS, BTL까지 연결되는 브랜드 경험을 설계합니다.
+              Disruptive. Impactful. Memorable.
             </p>
           </div>
           <div className="text-right leading-tight">
