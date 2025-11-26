@@ -3,6 +3,8 @@
 
 import { useState } from "react";
 import { MapPinAreaIcon } from "@phosphor-icons/react";
+// ✅ Supabase 클라이언트 임포트 (이미 프로젝트에 있다고 가정)
+import { supabase } from "@/lib/supabaseClient";
 
 type FormState = {
   inquiry: string;
@@ -31,6 +33,8 @@ const inquiryOptions = ["SNS", "Digital Campaign", "BTL", "협력사 관련 문�
 export default function ContactPage() {
   const [form, setForm] = useState<FormState>(initialState);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false); // ✅ 로딩 상태
+  const [errorMsg, setErrorMsg] = useState<string | null>(null); // ✅ 에러 메시지
 
   const onChange =
     (field: keyof FormState) =>
@@ -61,20 +65,48 @@ export default function ContactPage() {
     form.name &&
     form.company &&
     form.email &&
-    form.agree;
+    form.agree &&
+    !loading;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ✅ Supabase 연동된 제출 함수
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
+    setErrorMsg(null);
 
     if (!canSubmit) return;
 
-    // TODO: 실제 서비스에서는 여기서 API 호출
-    alert("문의가 접수되었습니다. (MVP: 콘솔 출력만)");
-    console.log("CONTACT FORM DATA:", form);
+    try {
+      setLoading(true);
 
-    setForm(initialState);
-    setSubmitted(false);
+      const { error } = await supabase.from("contacts").insert({
+        inquiry: form.inquiry,
+        title: form.title,
+        content: form.content,
+        name: form.name,
+        company: form.company,
+        email: form.email,
+        phone: form.phone || null,
+        agree: form.agree,
+        // created_at은 DB default now() 쓰면 안 넣어도 됨
+      });
+
+      if (error) {
+        console.error("SUPABASE INSERT ERROR:", error);
+        setErrorMsg(
+          "문의 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+        );
+        return;
+      }
+
+      alert("문의가 접수되었습니다. 감사합니다!");
+      console.log("CONTACT FORM DATA (saved to Supabase):", form);
+
+      setForm(initialState);
+      setSubmitted(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,6 +116,9 @@ export default function ContactPage() {
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-16">
           Contact <span className="-ml-1">_</span>
         </h1>
+
+        {/* 에러 메시지 표시 (옵션) */}
+        {errorMsg && <p className="mb-6 text-sm text-red-500">{errorMsg}</p>}
 
         <form
           onSubmit={handleSubmit}
@@ -310,7 +345,7 @@ export default function ContactPage() {
                     : "bg-gray-100 text-gray-400 cursor-not-allowed"
                 }`}
               >
-                제출
+                {loading ? "전송 중..." : "제출"}
               </button>
             </div>
           </div>
