@@ -12,21 +12,6 @@ export default function AboutPage() {
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-16">
             About <span className="-ml-1">_</span>
           </h1>
-
-          {/* 중앙 문구 */}
-          <div className="text-center space-y-4 mb-16">
-            <p className="text-lg md:text-2xl">
-              We are digital&nbsp; communication agency
-            </p>
-            <p className="text-sm md:text-base leading-relaxed text-gray-800">
-              주최자들은 디지털 중심으로 일하고, 디지털 중심으로 생각 합니다.
-              <br />
-              어떤 어려운 문제도 해결하고 최선의 해결책을 찾아내 해답을
-              제시하는,
-              <br />
-              모든 일의 주최가 되어 최선의 결과를 만들어 냅니다.
-            </p>
-          </div>
         </div>
 
         {/* 노란 띠 + 로고 영역 */}
@@ -52,14 +37,31 @@ export default function AboutPage() {
           {/* 텍스트 오버레이 */}
           <div className="absolute inset-0 flex items-center">
             <div className="max-w-6xl mx-auto px-6">
-              <div className="max-w-xl ml-auto text-right text-sm md:text-base leading-relaxed">
+              <div className="max-w-xl ml-auto text-center text-sm md:text-base leading-relaxed">
+                <p className="text-lg md:text-2xl">
+                  We are digital&nbsp; communication agency
+                </p>
+                <p className="text-sm md:text-base leading-relaxed">
+                  주최자들은 디지털 중심으로 일하고, 디지털 중심으로 생각
+                  합니다.
+                  <br />
+                  어떤 어려운 문제도 해결하고 최선의 해결책을 찾아내 해답을
+                  제시하는,
+                  <br />
+                  모든 일의 주최가 되어 최선의 결과를 만들어 냅니다.
+                  <br />
+                  <br />
+                  <br />
+                </p>
                 <p className="mb-3">
-                  구성원들과 함께 성장하고 함께 행복해진다는 신념으로 긍정적이고
-                  즐겁게 일할 수 있는 환경을 최우선으로 생각합니다.
+                  구성원들과 함께 성장하고 함께 행복해진다는 신념으로
+                  <br />
+                  긍정적이고 즐겁게 일할 수 있는 환경을 최우선으로 생각합니다.
                 </p>
                 <p>
-                  주최자들과 함께하는 모든 클라이언트와 구성원들이 과정과 결과
-                  모두 즐겁고 웃을 수 있는 일들을 만들어 갑니다.
+                  주최자들과 함께하는 모든 클라이언트와 구성원들이
+                  <br />
+                  과정과 결과 모두 즐겁고 웃을 수 있는 일들을 만들어 갑니다.
                 </p>
               </div>
             </div>
@@ -68,26 +70,27 @@ export default function AboutPage() {
       </section>
 
       {/* 2) 멤버 소개 섹션 (JOO / CHOI) */}
-      <section className="relative bg-gray-900 text-white">
+      <section className="relative bg-gray-900 text-white overflow-hidden">
         {/* 뒷배경 이미지 */}
-        <div className="absolute inset-0 opacity-40">
+        <div className="absolute inset-0">
           <Image
             src="/about-team-bg.jpg"
             alt="Team background"
             fill
             className="object-cover"
           />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center justify-between gap-10">
+        <div className="relative max-w-6xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center justify-between gap-12">
           {/* 왼쪽 JOO 카드 */}
-          <div className="w-full md:w-1/3 space-y-6">
+          <div className="w-full md:w-1/4 space-y-6">
             <div className="text-5xl font-extrabold tracking-tight leading-none">
               <div className="text-3xl mb-2">-</div>
               <div>JOO</div>
             </div>
             <p className="text-sm tracking-[0.25em] uppercase">WON JIN</p>
-            <p className="text-sm leading-relaxed text-gray-200">
+            <p className="text-sm leading-relaxed text-gray-100">
               배고프다 생새우가 먹고먹고
               <br />
               배고프다 생새우가 먹고먹고
@@ -98,26 +101,39 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* 가운데 큰 이미지 */}
-          <div className="w-full md:w-1/3">
-            <div className="relative aspect-[3/4]">
-              <Image
-                src="/about-joo.jpg"
-                alt="Joo portrait"
-                fill
-                className="object-cover"
-              />
+          {/* 가운데 두 사진 (겹치지 않고 나란히) */}
+          <div className="w-full md:w-1/2 flex justify-center">
+            <div className="relative w-full max-w-xl h-[420px] md:h-[520px] flex gap-6">
+              {/* JOO 사진 */}
+              <div className="relative flex-1 overflow-hidden shadow-2xl">
+                <Image
+                  src="/about-joo.jpg"
+                  alt="Joo portrait"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              {/* CHOI 사진 */}
+              <div className="relative flex-1 overflow-hidden shadow-2xl">
+                <Image
+                  src="/about-choi.jpg"
+                  alt="Choi portrait"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
 
           {/* 오른쪽 CHOI 카드 */}
-          <div className="w-full md:w-1/3 space-y-6 text-right">
+          <div className="w-full md:w-1/4 space-y-6 text-right">
             <div className="text-5xl font-extrabold tracking-tight leading-none">
               <div className="text-3xl mb-2">-</div>
               <div>CHOI</div>
             </div>
             <p className="text-sm tracking-[0.25em] uppercase">DONG HOO</p>
-            <p className="text-sm leading-relaxed text-gray-200">
+            <p className="text-sm leading-relaxed text-gray-100">
               배고프다 생새우가 먹고먹고
               <br />
               배고프다 생새우가 먹고먹고
