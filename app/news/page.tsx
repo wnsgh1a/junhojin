@@ -1,134 +1,64 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import NewsCard from "@/components/NewsCard";
 import PageHeader from "@/components/PageHeader";
 
 type NewsItem = {
   id: number;
-  thumbnail: string;
+  thumbnail: string | null;
   title: string;
-  excerpt: string;
+  excerpt: string | null;
   date: string;
   category: string;
 };
 
-// 더미 뉴스 데이터 (원하는 만큼 넣되, 화면에는 최대 10개까지만 노출 예정)
-const ALL_NEWS: NewsItem[] = [
-  {
-    id: 1,
-    thumbnail: "/thumb-news-1.jpg",
-    title: "JOOCHOIST, 신규 디지털 캠페인 론칭",
-    excerpt:
-      "디지털 캠페인 · SNS · BTL을 아우르는 신규 프로젝트를 공개했습니다. 브랜드 경험을 극대화하는 다양한 시도들이 담겨 있습니다.",
-    date: "2024.10.10",
-    category: "NEWS",
-  },
-  {
-    id: 2,
-    thumbnail: "/thumb-news-2.jpg",
-    title: "브랜드 경험 팝업 스토어 성공적 마무리",
-    excerpt:
-      "도심 한가운데서 진행된 브랜드 경험 팝업 스토어가 성황리에 마무리되었습니다. 오프라인과 디지털을 연결한 다양한 실험을 진행했습니다.",
-    date: "2024.09.22",
-    category: "EVENT",
-  },
-  {
-    id: 3,
-    thumbnail: "/thumb-news-3.jpg",
-    title: "SNS 콘텐츠 시리즈, 캠페인 조회수 500만 회 돌파",
-    excerpt:
-      "F/W 시즌을 맞아 진행한 SNS 콘텐츠 시리즈가 500만 회 이상의 조회수를 기록하며 높은 참여율을 보였습니다.",
-    date: "2024.09.01",
-    category: "SNS",
-  },
-  {
-    id: 4,
-    thumbnail: "/thumb-news-1.jpg",
-    title: "디지털 캠페인 리포트 2024 발간",
-    excerpt:
-      "JOOCHOIST가 진행한 주요 프로젝트를 기반으로 디지털 캠페인 인사이트를 정리한 리포트를 발간했습니다.",
-    date: "2024.08.10",
-    category: "REPORT",
-  },
-  {
-    id: 5,
-    thumbnail: "/thumb-news-2.jpg",
-    title: "글로벌 브랜드와의 장기 파트너십 체결",
-    excerpt:
-      "글로벌 클라이언트와의 장기 파트너십을 체결하며 디지털 커뮤니케이션 영역을 확장합니다.",
-    date: "2024.07.28",
-    category: "NEWS",
-  },
-  {
-    id: 6,
-    thumbnail: "/thumb-news-3.jpg",
-    title: "JOOCHOIST, 신규 크리에이티브 멤버 합류",
-    excerpt:
-      "다양한 분야의 크리에이터들이 합류하며 한층 더 다채로운 캠페인을 제안할 수 있게 되었습니다.",
-    date: "2024.07.05",
-    category: "PEOPLE",
-  },
-  {
-    id: 7,
-    thumbnail: "/thumb-news-1.jpg",
-    title: "로컬 브랜드 협업 캠페인 공개",
-    excerpt:
-      "지역 기반 브랜드와의 협업을 통해 새로운 형태의 디지털 캠페인을 선보였습니다.",
-    date: "2024.06.20",
-    category: "NEWS",
-  },
-  {
-    id: 8,
-    thumbnail: "/thumb-news-2.jpg",
-    title: "SNS 채널 리브랜딩 완료",
-    excerpt:
-      "브랜드 아이덴티티를 강화하기 위해 주요 SNS 채널의 디자인과 톤앤매너를 리브랜딩했습니다.",
-    date: "2024.06.01",
-    category: "SNS",
-  },
-  {
-    id: 9,
-    thumbnail: "/thumb-news-3.jpg",
-    title: "디지털 캠페인 어워즈 수상",
-    excerpt:
-      "국내외 디지털 캠페인 어워즈에서 다양한 부문을 수상하며 크리에이티브를 인정받았습니다.",
-    date: "2024.05.18",
-    category: "AWARD",
-  },
-  {
-    id: 10,
-    thumbnail: "/thumb-news-1.jpg",
-    title: "JOOCHOIST, 신규 오피스 오픈",
-    excerpt: "팀 확장과 협업 환경 강화를 위해 새로운 오피스로 이전했습니다.",
-    date: "2024.05.01",
-    category: "NEWS",
-  },
-  {
-    id: 11,
-    thumbnail: "/thumb-news-1.jpg",
-    title: "JOOCHOIST, 신규 오피스 오픈",
-    excerpt: "팀 확장과 협업 환경 강화를 위해 새로운 오피스로 이전했습니다.",
-    date: "2024.05.01",
-    category: "NEWS",
-  },
-];
-
-// 한 페이지당 최대 10개 / 전체도 최대 10개까지만 노출
 const ITEMS_PER_PAGE = 10;
-const NEWS = ALL_NEWS;
 
 export default function NewsPage() {
+  const [news, setNews] = useState<NewsItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const totalPages = Math.max(1, Math.ceil(NEWS.length / ITEMS_PER_PAGE));
+  // ✅ Supabase에서 뉴스 목록 가져오기
+  useEffect(() => {
+    const fetchNews = async () => {
+      setLoading(true);
+      setError(null);
+
+      const { data, error } = await supabase
+        .from("news")
+        .select("id, title, excerpt, date, category")
+        .order("date", { ascending: false });
+
+      console.log("news data:", data);
+      console.dir(error); // 객체 구조까지 보기 좋음
+
+      if (error) {
+        console.error("❌ Supabase news fetch error message:", error.message);
+        console.error("❌ Supabase news fetch error details:", error.details);
+        setError("뉴스를 불러오는 중 오류가 발생했습니다.");
+      } else {
+        setNews((data ?? []) as NewsItem[]);
+      }
+
+      setLoading(false);
+    };
+
+    fetchNews();
+  }, []);
+
+  // ✅ 페이징 계산
+  const totalPages = Math.max(1, Math.ceil(news.length / ITEMS_PER_PAGE));
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const currentItems = NEWS.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const currentItems = news.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
-    // 페이지 변경 시 맨 위로 스크롤
+
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -144,61 +74,81 @@ export default function NewsPage() {
         right2="insight"
       />
 
-      {/* 2. 뉴스 리스트 (가로 기준 1개씩) */}
+      {/* 2. 뉴스 리스트 */}
       <section className="max-w-6xl mx-auto px-6 py-12 space-y-6">
+        {/* 로딩 상태 */}
+        {loading && (
+          <p className="text-sm text-gray-500">뉴스를 불러오는 중입니다...</p>
+        )}
+
+        {/* 에러 상태 */}
+        {error && !loading && <p className="text-sm text-red-500">{error}</p>}
+
+        {/* 데이터 없음 */}
+        {!loading && !error && news.length === 0 && (
+          <p className="text-sm text-gray-500">등록된 뉴스가 없습니다.</p>
+        )}
+
+        {/* 실제 뉴스 리스트 */}
         {currentItems.map((item) => (
           <NewsCard
             key={item.id}
+            id={item.id}
             title={item.title}
             date={item.date}
             category={item.category}
+            // 나중에 NewsCard가 thumbnail, excerpt 받도록 바꾸고 싶으면 여기서도 같이 넘기면 됨
+            // thumbnail={item.thumbnail}
+            // excerpt={item.excerpt}
           />
         ))}
 
         {/* 3. 하단 페이지 넘버링 */}
-        <div className="mt-8 flex items-center justify-center gap-2">
-          <button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 text-xs border rounded-full ${
-              currentPage === 1
-                ? "text-gray-400 border-gray-300 cursor-default"
-                : "text-gray-700 border-gray-400 hover:bg-gray-100"
-            }`}
-          >
-            ←
-          </button>
+        {news.length > 0 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <button
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 text-xs border rounded-full ${
+                currentPage === 1
+                  ? "text-gray-400 border-gray-300 cursor-default"
+                  : "text-gray-700 border-gray-400 hover:bg-gray-100"
+              }`}
+            >
+              ←
+            </button>
 
-          {Array.from({ length: totalPages }, (_, idx) => {
-            const page = idx + 1;
-            const isActive = page === currentPage;
-            return (
-              <button
-                key={page}
-                onClick={() => goToPage(page)}
-                className={`w-8 h-8 text-xs rounded-full border flex items-center justify-center ${
-                  isActive
-                    ? "bg-black text-white border-black"
-                    : "text-gray-700 border-gray-300 hover:bg-gray-100"
-                }`}
-              >
-                {page}
-              </button>
-            );
-          })}
+            {Array.from({ length: totalPages }, (_, idx) => {
+              const page = idx + 1;
+              const isActive = page === currentPage;
+              return (
+                <button
+                  key={page}
+                  onClick={() => goToPage(page)}
+                  className={`w-8 h-8 text-xs rounded-full border flex items-center justify-center ${
+                    isActive
+                      ? "bg-black text-white border-black"
+                      : "text-gray-700 border-gray-300 hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              );
+            })}
 
-          <button
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-1 text-xs border rounded-full ${
-              currentPage === totalPages
-                ? "text-gray-400 border-gray-300 cursor-default"
-                : "text-gray-700 border-gray-400 hover:bg-gray-100"
-            }`}
-          >
-            →
-          </button>
-        </div>
+            <button
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1 text-xs border rounded-full ${
+                currentPage === totalPages
+                  ? "text-gray-400 border-gray-300 cursor-default"
+                  : "text-gray-700 border-gray-400 hover:bg-gray-100"
+              }`}
+            >
+              →
+            </button>
+          </div>
+        )}
       </section>
     </>
   );

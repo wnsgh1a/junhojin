@@ -1,66 +1,34 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
+// components/NewsCard.tsx
+import Link from "next/link";
 
 type NewsCardProps = {
+  id: number;
   title: string;
-  excerpt?: string; // 필요하면 나중에 쓸 수 있게 남겨둠
   date: string;
   category: string;
 };
 
-export default function NewsCard({ title, date, category }: NewsCardProps) {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting) {
-          setVisible(true);
-        } else {
-          setVisible(false);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
+export default function NewsCard({ id, title, date, category }: NewsCardProps) {
   return (
-    <article
-      ref={ref}
-      className={`
-        w-full cursor-pointer
-        transition-all duration-500 ease-out
-        ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
-      `}
+    <Link
+      href={`/news/${id}`}
+      className="block border-b border-gray-200 py-6 group"
     >
-      <div className="flex items-center justify-between gap-6 py-4 border-b border-gray-200">
-        {/* 왼쪽: 세로 라인 + 제목 */}
-        <div className="flex-1 flex items-center">
-          <div className="h-10 border-l-2 border-black mr-6" />
-          <h3 className="text-sm md:text-base font-semibold line-clamp-2">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs tracking-wide text-gray-500 mb-1">{category}</p>
+          <h3 className="text-base md:text-lg font-medium group-hover:underline">
             {title}
           </h3>
         </div>
 
-        {/* 오른쪽: 카테고리 / 날짜 배지 */}
-        <div className="flex flex-col items-end gap-2 min-w-[120px]">
-          <span className="inline-flex items-center justify-center px-4 py-1 rounded-full bg-yellow-400 text-[11px] font-semibold uppercase tracking-[0.15em] text-black">
-            {category}
-          </span>
-          <span className="inline-flex items-center justify-center px-4 py-1 rounded-full bg-black text-[11px] text-white">
-            {date}
+        <div className="flex items-center gap-3 text-xs text-gray-500 whitespace-nowrap">
+          <span>{date}</span>
+          <span className="hidden md:inline-block group-hover:translate-x-1 transition-transform">
+            →
           </span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
