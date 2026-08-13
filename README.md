@@ -1,6 +1,3 @@
-제공해주신 파일 내용을 바탕으로, 기술 스택과 현재 구현 상황이 명확히 드러나도록 작성한 **GitHub README.md** 초안입니다.
-
----
 
 # Junhojin Portfolio Project
 
